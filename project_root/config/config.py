@@ -28,5 +28,24 @@ Y_SCALER = os.path.abspath(Y_SCALER)
 RELEVENT_COLUMNS_IDX = os.path.join(BASE_DIR, "../encodings/relevant_columns_idx.npy")
 RELEVENT_COLUMNS_IDX = os.path.abspath(RELEVENT_COLUMNS_IDX)  # Converts it to absolute path
 
-MODEL = os.path.join(BASE_DIR, "../encodings/linear_regression_weights.json")
+SKEW_VALUES_INDICES = os.path.join(BASE_DIR, "../encodings/to_remove_skew_values_indices.npy")
+SKEW_VALUES_INDICES = os.path.abspath(SKEW_VALUES_INDICES)  # Converts it to absolute path
+
+MODEL = os.path.join(BASE_DIR, "../encodings/random_forest_model.pkl")
 MODEL = os.path.abspath(MODEL)
+
+FEATURE_ORDER = [
+    "year",
+    "manufacturer",
+    "model",
+    "condition",
+    "cylinders",
+    "fuel",
+    "odometer",
+    "transmission",
+    "drive",
+    "size",
+    "type",
+    "paint_color"
+    # ... (add all your features here, exactly as you trained)
+]

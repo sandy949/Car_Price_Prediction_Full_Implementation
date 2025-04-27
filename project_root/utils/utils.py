@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import json
 import joblib
+from config import config
 
 def encode(data, column_name, json_file_path):
     """
@@ -52,7 +53,7 @@ def convert_to_ohe_input(value, column_name, json_file_path):
 
 def keep_relevant_columns(data, file_path):
    """
-   Removes Predefined columns which have less than 10**(-3) pearson coorelation with the target variable.
+   Removes Predefined columns which have less than 0.07 pearson coorelation with the target variable.
    
    :param data: pd dataframe on which the columns are to be reduced.
    :param file_path: path to file containing the array which has the indexes of column which to keep.
@@ -106,3 +107,25 @@ def un_scale(file_path,data):
     scaler = joblib.load(file_path)
     unscaled_data = scaler.inverse_transform(data)
     return unscaled_data
+
+def apply_log1p(data,file_path):
+
+    loaded_file = np.load(file_path,allow_pickle=True)
+    columns_to_log = data.columns[loaded_file]
+
+    for col in columns_to_log:
+        if (data[col] < 0).any():
+            raise ValueError(f"Column {col} contains negative values — log1p not safe.")
+        data[col] = np.log1p(data[col])
+
+    return data 
+
+def apply_expm1(result):
+    return np.expm1(result)   
+
+def prepare_input(data_dict):
+    """
+    Reorders incoming data_dict according to training feature order.
+    """
+    reordered = {feature: data_dict[feature] for feature in config.FEATURE_ORDER}
+    return reordered

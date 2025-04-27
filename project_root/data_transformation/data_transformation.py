@@ -61,12 +61,17 @@ def process_input(input_data):
   
     # Step 4: Keep relevant columns
     processed_data = utils.keep_relevant_columns(data,config.RELEVENT_COLUMNS_IDX)  
+    
+    # Step 5: Remove highly skewed columns by using log transform
+    processed_data = utils.apply_log1p(processed_data,config.SKEW_VALUES_INDICES)
+    
+    # Step 6: Scale input data
+    processed_data = utils.scale(config.X_SCALER, processed_data)
 
     # Step 5: Apply PCA transformation
     processed_data = utils.apply_pca_by_Q_mat(config.Q_MATRIX, processed_data)
 
-    # Step 6: Scale input data
-    processed_data = utils.scale(config.X_SCALER, processed_data)
+    
 
     return processed_data
     # return data.shape
