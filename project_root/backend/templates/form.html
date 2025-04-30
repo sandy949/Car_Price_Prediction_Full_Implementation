@@ -1,24 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Car Price Predictor</title>
+    <title>Car Price Prediction</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        body { padding: 20px; }
+        .form-container { max-width: 700px; margin: auto; padding: 20px; box-shadow: 0 0 10px #ddd; border-radius: 10px; }
+        .form-label { font-weight: 600; }
+    </style>
 </head>
 <body>
-    <h2>Enter Car Details</h2>
-    <form action="/predict" method="post">
-        <label>Manufacturer:</label><input type="text" name="manufacturer"><br>
-        <label>Model:</label><input type="text" name="model"><br>
-        <label>Condition:</label><input type="text" name="condition"><br>
-        <label>Cylinders:</label><input type="text" name="cylinders"><br>
-        <label>Fuel:</label><input type="text" name="fuel"><br>
-        <label>Transmission:</label><input type="text" name="transmission"><br>
-        <label>Drive:</label><input type="text" name="drive"><br>
-        <label>Size:</label><input type="text" name="size"><br>
-        <label>Type:</label><input type="text" name="type"><br>
-        <label>Paint Color:</label><input type="text" name="paint_color"><br>
-        <label>Year:</label><input type="number" name="year"><br>
-        <label>Odometer:</label><input type="number" name="odometer"><br>
-        <input type="submit" value="Predict">
+<div class="form-container">
+    <h2 class="mb-4">Enter Car Details</h2>
+    <form action="/predict" method="POST">
+        {% for field in fields %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field }}">{{ field.replace('_', ' ').title() }}</label>
+
+                {% if field == 'model' %}
+                    <!-- Autocomplete field for model -->
+                    <select id="model" name="model" class="form-control"></select>
+
+                {% elif field in ['manufacturer', 'condition', 'cylinders', 'fuel', 'transmission', 'drive', 'size', 'type', 'paint_color'] %}
+                    <!-- Categorical dropdowns -->
+                    <select id="{{ field }}" name="{{ field }}" class="form-control"></select>
+
+                {% else %}
+                    <!-- Numeric/text fields -->
+                    <input type="text" class="form-control" id="{{ field }}" name="{{ field }}" required>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">Predict</button>
     </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    const categoricalFields = ['manufacturer', 'condition', 'cylinders', 'fuel', 'transmission', 'drive', 'size', 'type', 'paint_color'];
+
+    // Load categorical dropdown options
+    categoricalFields.forEach(field => {
+        $.getJSON(`/get-options/${field}`, function(data) {
+            const select = $(`#${field}`);
+            data.forEach(option => {
+                select.append($('<option>', { value: option, text: option }));
+            });
+        });
+    });
+
+    // Initialize Select2 for model field
+    $('#model').select2({
+        placeholder: 'Search for a car model',
+        ajax: {
+            url: '/autocomplete/model',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return { q: params.term };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.map(item => ({ id: item, text: item }))
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2
+    });
+</script>
 </body>
 </html>
