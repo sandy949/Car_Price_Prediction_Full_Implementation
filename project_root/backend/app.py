@@ -50,11 +50,16 @@ def autocomplete_model():
 def predict():
     """Process user input and return predicted car price."""
     try:
+        print("Headers:", request.headers)
         input_data = request.get_json() if request.is_json else request.form.to_dict()
         input_data = utils.prepare_input(input_data)
         X = data_transformation.process_input(input_data)
         prediction = model.predict(X, config.MODEL)
-        return render_template('result.html', price=float(prediction[0]))
+        #return render_template('result.html', price=float(prediction[0]))
+        if request.headers.get("Accept") == "application/json":
+            return jsonify({"predicted_price": float(prediction[0])})
+        else:
+            return render_template("result.html", price=float(prediction[0]))
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
 

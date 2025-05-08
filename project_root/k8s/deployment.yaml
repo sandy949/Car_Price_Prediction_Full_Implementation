@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: car-price-pred-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-inference
+  template:
+    metadata:
+      labels:
+        app: flask-inference
+    spec:
+      containers:
+        - name: car-price-pred-container
+          image: sandeep33333/car-price-pred:latest
+          ports:
+            - containerPort: 5000
