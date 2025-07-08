@@ -8,7 +8,11 @@ CATEGORICAL_COLUMNS = ['manufacturer', 'model', 'condition', 'cylinders', 'fuel'
 
 NUMERICAL_COLUMNS = ['year', 'odometer']
 
-ENCODING_PATHS = {col: f'encodings/{col}_encoding_dict.json' for col in CATEGORICAL_COLUMNS}
+ENCODING_PATHS = {
+    col: os.path.abspath(os.path.join("..", "encodings", f"{col}_encoding_dict.json"))
+    for col in CATEGORICAL_COLUMNS
+}
+
 
 NOMINAL_COLUMNS = ["manufacturer","model","fuel","type","paint_color"]
 
